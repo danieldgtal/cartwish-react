@@ -1,27 +1,33 @@
 .navbar {
 	justify-content: space-between;
-	padding: 0 40px;
+	padding: 0 5px;
 	background-color: #fff;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .navbar_heading {
-	margin-right: 20px;
 	font-size: 32px;
+	flex-shrink: 0;
+	white-space: nowrap; /* Prevent text wrapping */
 }
 
 .navbar_form {
-	width: 450px;
+	width: 350px; /* ✅ Reduced from 450px */
+	max-width: 350px;
 	height: 40px;
 	border: 1px solid #cdcdcd;
 	border-radius: 5px;
 	padding: 3px;
+	box-sizing: border-box;
+	margin: 0 5px; /* ✅ Add spacing */
 }
 
 .navbar_search {
 	flex: 1;
 	height: 100%;
 	padding: 0 7px;
-	font-size: 20px;
+	font-size: 18px; /* ✅ Reduced from 20px */
 	font-weight: 500;
 	border: none;
 	outline: none;
@@ -30,7 +36,7 @@
 .search_button {
 	height: 100%;
 	padding: 0 10px;
-	font-size: 20px;
+	font-size: 18px; /* ✅ Reduced from 20px */
 	font-weight: 500;
 	border: none;
 	border-radius: 5px;
@@ -40,11 +46,10 @@
 }
 
 .navbar_links {
-	font-size: 20px;
-}
-
-.navbar_links > a {
-	margin: 15px;
+	font-size: 15px; /* ✅ Reduced from 20px */
+	gap: 10px; /* ✅ Reduced from 15px */
+	flex-shrink: 0;
+	white-space: nowrap; /* ✅ Keep links on one line */
 }
 
 .cart_counts {
