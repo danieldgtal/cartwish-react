@@ -1,22 +1,35 @@
-import React, { useRef, useState } from "react";
-
+import React from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import "./LoginPage.css";
 
+const schema = z.object({
+	email: z.string().email.min(),
+	password: z.string().min(8, "Password must be at least 8 characters long"),
+});
+
 const LoginPage = () => {
-	const [user, setUser] = useState({
-		email: "",
-		password: "",
-	});
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm();
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
+	const onSubmit = (data) => {
+		console.log("Form data:", data);
+	};
 
-		console.log(user);
+	const onError = (formErrors) => {
+		console.log("Validation errors:", formErrors);
 	};
 
 	return (
 		<section className="align_center form_page">
-			<form className="authentication_form" onSubmit={handleSubmit}>
+			<form
+				className="authentication_form"
+				noValidate
+				onSubmit={handleSubmit(onSubmit, onError)}
+			>
 				<h2>Login Form</h2>
 				<div className="form_inputs">
 					<div>
@@ -26,9 +39,18 @@ const LoginPage = () => {
 							id="email"
 							className="form_text_input"
 							placeholder="Enter your email address"
-							onChange={(e) => setUser({ ...user, email: e.target.value })}
-							value={user.email}
+							{...register("email", {
+								required: "Please enter your email address",
+								minLength: { value: 3, message: "Minimum length is 3" },
+								pattern: {
+									value: /[^\s@]+@[^\s@]+\.[^\s@]+/,
+									message: "Enter a valid email address",
+								},
+							})}
 						/>
+						{errors.email?.message && (
+							<em className="form_error">{errors.email.message}</em>
+						)}
 					</div>
 					<div>
 						<label htmlFor="password">Password</label>
@@ -37,8 +59,7 @@ const LoginPage = () => {
 							id="password"
 							className="form_text_input"
 							placeholder="Enter your password"
-							onChange={(e) => setUser({ ...user, password: e.target.value })}
-							value={user.password}
+							{...register("password")}
 						/>
 						<button type="button">Hide Password</button>
 						<button type="button">Show Password</button>
