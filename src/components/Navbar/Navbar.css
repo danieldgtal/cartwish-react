@@ -52,6 +52,10 @@
 	white-space: nowrap; /* ✅ Keep links on one line */
 }
 
+.navbar_links > a.active {
+	font-weight: 600;
+}
+
 .cart_counts {
 	justify-content: center;
 	width: 20px;
