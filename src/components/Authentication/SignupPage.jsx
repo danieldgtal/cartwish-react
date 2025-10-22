@@ -5,9 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import "./SignupPage.css";
 import user from "../../assets/user.webp";
+import { signUp } from "../../services/userServices";
 
 const SignupPage = () => {
 	const [profileImage, setProfileImage] = useState(null);
+	const [formError, setFormError] = useState("");
 	const schema = z.object({
 		name: z
 			.string()
@@ -30,8 +32,14 @@ const SignupPage = () => {
 		formState: { errors },
 	} = useForm({ resolver: zodResolver(schema) });
 
-	const onSubmit = (data) => {
-		console.log("Form data:", data);
+	const onSubmit = async (formData) => {
+		try {
+			await signUp(formData, profileImage);
+		} catch (error) {
+			if (error.response && error.response.status === 400) {
+				setFormError(error.response.data.message);
+			}
+		}
 	};
 
 	const onError = (formErrors) => {
@@ -140,7 +148,7 @@ const SignupPage = () => {
 						)}
 					</div>
 				</div>
-
+				{formError && <em className="form_error">{formError}</em>}
 				<button className="search_button form_submit" type="submit">
 					Submit
 				</button>

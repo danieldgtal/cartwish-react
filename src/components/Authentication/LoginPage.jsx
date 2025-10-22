@@ -1,26 +1,48 @@
 import React from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { login } from "../../services/userServices";
 
 import "./LoginPage.css";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const schema = z.object({
 	email: z.string().email({ message: "Please Enter a valid email address" }),
 	password: z
 		.string()
-		.min(8, { message: "Password must be at least 8 characters long" }),
+		.min(5, { message: "Password must be at least 5 characters long" }),
 });
 
 const LoginPage = () => {
+	const [formError, setFormError] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
+	let navigate = useNavigate();
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
 	} = useForm({ resolver: zodResolver(schema) });
 
-	const onSubmit = (data) => {
-		console.log("Form data:", data);
+	const onSubmit = async (formData) => {
+		setIsLoading(true);
+		setFormError("");
+		try {
+			const { data } = await login(formData);
+			localStorage.setItem("token", data.token);
+
+			navigate("/");
+		} catch (error) {
+			console.error("Login error:", error);
+			if (error.response && error.response.status === 400) {
+				setFormError(error.response.data.message);
+			} else {
+				setFormError("Login failed. Please try again.");
+			}
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	const onError = (formErrors) => {
@@ -61,12 +83,15 @@ const LoginPage = () => {
 						{errors.password && (
 							<em className="form_error">{errors.password.message}</em>
 						)}
-						<button type="button">Hide Password</button>
-						<button type="button">Show Password</button>
 					</div>
 
-					<button type="submit" className="search_button form_submit">
-						Submit
+					{formError && <em className="form_error">{formError}</em>}
+					<button
+						type="submit"
+						className="search_button form_submit"
+						disabled={isLoading}
+					>
+						{isLoading ? "Logging in..." : "Submit"}
 					</button>
 				</div>
 			</form>

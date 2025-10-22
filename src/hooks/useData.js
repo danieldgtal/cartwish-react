@@ -28,17 +28,26 @@ const useData = (endpoint, customConfig, deps) => {
 
 	useEffect(
 		() => {
+			let cancelled = false;
 			setIsLoading(true);
+			setError("");
 			apiClient
 				.get(endpoint, customConfig)
 				.then((res) => {
+					if (cancelled) return;
 					setData(res.data);
-					setIsLoading(false);
 				})
 				.catch((err) => {
+					if (cancelled) return;
 					setError(err.message);
+				})
+				.finally(() => {
+					if (cancelled) return;
 					setIsLoading(false);
 				});
+			return () => {
+				cancelled = true;
+			};
 		},
 		deps ? deps : []
 	);
